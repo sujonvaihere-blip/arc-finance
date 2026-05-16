@@ -65,23 +65,37 @@ const shortAddr = (a) => a.slice(0, 6) + "..." + a.slice(-4);
 const statusColor = (s) => ({ confirmed: "#34d399", pending: "#f59e0b", failed: "#f87171" }[s] || "#94a3b8");
 
 async function callAI(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.REACT_APP_ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: "You are an AI assistant for Arc Finance, a stablecoin dashboard. Be concise, finance-focused, use bullet points, mention USDC/USDT/DAI. Under 120 words.",
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-  const data = await res.json();
-  return data.content?.map(b => b.text || "").join("") || "No response.";
+  if (!process.env.REACT_APP_ANTHROPIC_API_KEY) {
+    return "Error: REACT_APP_ANTHROPIC_API_KEY is not set. Please add your Anthropic API key to .env file (create from .env.example).";
+  }
+  
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.REACT_APP_ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: "You are an AI assistant for Arc Finance, a stablecoin dashboard. Be concise, finance-focused, use bullet points, mention USDC/USDT/DAI. Under 120 words.",
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      return `Error: ${errorData.error?.message || "API request failed"}`;
+    }
+    
+    const data = await res.json();
+    return data.content?.map(b => b.text || "").join("") || "No response.";
+  } catch (error) {
+    return `Error: ${error.message}. Please check your API key and network connection.`;
+  }
 }
 
 function BarChart({ data, filter }) {
