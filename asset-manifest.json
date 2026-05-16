@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/arc-finance/static/css/main.be207e4d.css",
+    "main.js": "/arc-finance/static/js/main.9fd5a0ff.js",
+    "index.html": "/arc-finance/index.html",
+    "main.be207e4d.css.map": "/arc-finance/static/css/main.be207e4d.css.map",
+    "main.9fd5a0ff.js.map": "/arc-finance/static/js/main.9fd5a0ff.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.be207e4d.css",
+    "static/js/main.9fd5a0ff.js"
+  ]
+}
